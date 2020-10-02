@@ -11,6 +11,23 @@
 
 <!-- LB -->
 
+<item>
+<title>Hello Blog</title>
+<guid>https://g-w1.github.io/blog/hello-blog.html</guid>
+<pubDate>Fri, 02 Oct 2020 11:56:09 -0400</pubDate>
+<description><![CDATA[
+Hello,
+<br>
+This is a new blog that I am trying out. Here is <code>some code</code>. And a
+
+<h3>Fancy Header</h3>
+
+<br>
+See you later
+]]></description>
+</item>
+
+
 
 
 </channel>
