@@ -13,6 +13,22 @@
 
 <item>
 <title>Hello Blog</title>
+<guid>https://g-w1.github.io/blog/hello-blog.html</guid>
+<pubDate>Fri, 02 Oct 2020 11:24:53 -0400</pubDate>
+<description><![CDATA[
+Hi! This is a test of the blog. It has a rss feed <a href="https://g-w1/github.io/blog/rss.xml">rss.xml</a> but the real question is does the rss work?
+
+<br>
+
+And <code>heres some fancy code</code>!
+
+See you later!
+]]></description>
+</item>
+
+
+<item>
+<title>Hello Blog</title>
 <guid>https://g-w1.github.io/blog/hello-blog</guid>
 <pubDate>Fri, 02 Oct 2020 11:20:53 -0400</pubDate>
 <description><![CDATA[
