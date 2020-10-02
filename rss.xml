@@ -16,11 +16,24 @@
 <guid>https://g-w1.github.io//dev/null#test</guid>
 <pubDate>Fri, 02 Oct 2020 09:41:44 -0400</pubDate>
 <description><![CDATA[
-test
+<p>
+test this is a test of my blog system
 
-test.oanstoaen
+new line
+</p>
+
+<code>
+  some code here
+</code>
+
+<h3>header fancy!!!!!!!</h3>
+
+
+<h4>OMG</h4> test post
 ]]></description>
 </item>
+
+
 
 
 
