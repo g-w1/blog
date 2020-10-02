@@ -13,19 +13,16 @@
 
 <item>
 <title>Hello Blog</title>
-<guid>https://g-w1.github.io/blog/hello-blog.html</guid>
-<pubDate>Fri, 02 Oct 2020 11:56:09 -0400</pubDate>
+<guid>https://g-w1.github.io/blog/blog/hello-blog.html</guid>
+<pubDate>Fri, 02 Oct 2020 12:01:28 -0400</pubDate>
 <description><![CDATA[
-Hello,
-<br>
-This is a new blog that I am trying out. Here is <code>some code</code>. And a
+Hello World!
 
-<h3>Fancy Header</h3>
-
-<br>
-See you later
+Hopefully I will post cool things here.
 ]]></description>
 </item>
+
+
 
 
 
