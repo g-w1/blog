@@ -3,30 +3,24 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
 
 <channel>
-<title>Jacob's Blog</title>
-<description>A Blog Where I Talk About Techy Stuff</description>
+<title>g-w1's Blog</title>
+<description>A feed about tech.</description>
 <language>en-us</language>
 <link>https://g-w1.github.io/blog/rss.xml</link>
 <atom:link href="https://g-w1.github.io/blog/rss.xml" rel="self" type="application/rss+xml" />
 
 <!-- LB -->
 
+<item>
+<title>test</title>
+<guid>https://g-w1.github.io//dev/null#test</guid>
+<pubDate>Fri, 02 Oct 2020 09:41:44 -0400</pubDate>
+<description><![CDATA[
+test
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+test.oanstoaen
+]]></description>
+</item>
 
 
 
