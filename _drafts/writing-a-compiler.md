@@ -8,11 +8,11 @@ categories: code
 
 At the start of the 2020 school year I wanted to learn more about compilers so I started writing a compiler. I did this as an independent study for school. I wanted to grow _dramatically_ as a thinker and learn a lot about computer science and compilers in specific.
 
-> Note: I may make some mistakes in this post. If that happens, please send me an email and ill correct it.
+> Note: I may make some mistakes in this post. If that happens, please send me an email and Ill correct it.
 
 # Why I Chose Rust
 
-I chose Rust for this because I wanted to learn it and it is just a very cool language. Some language features that make it very easy to write a compiler in are:
+I chose Rust for this because I wanted to learn it and it is just a very cool language. If you don't know of it, I think of it as aiming to be a replacement to C++. Some language features that make it very easy to write a compiler in are:
 
 **Enums (algebraic data types)**
 
@@ -146,7 +146,7 @@ fn parse_func(&mut self, tree: &mut Vec<AstNode>) -> Result<(), ParserError> {
 
 You can see it calls the parse function. The arg it takes is a `bool` that tells it whether it is top-level of not. We call it with false here because it is parsing inside the function. It also calls `parse_func_proto`, another helper function.
 
-Another reason why I like Rust is because of it's error system. The question mark `?` operator is used for a function that can return an error. You can kind of think of it like a monad binding (TODO is this right) in Haskell except now it only supports `Option` and `Result`. If the function returns an error it will be passed along, but if the function does not return an error, then the error will be unwrapped. The error type in rust is `Result<T, E>`; it is an Enum. The question mark is just syntactic sugar for
+Another reason why I like Rust is because of it's error system. The question mark `?` operator is used for a function that can return an error. You can kind of think of it like a monad binding in Haskell except now it only supports `Option` and `Result`. If the function returns an error it will be passed along, but if the function does not return an error, then the error will be unwrapped. The error type in rust is `Result<T, E>`; it is an Enum. The question mark is just syntactic sugar for
 
 ```rust
 let unwraped_res = match func_that_returns_result() {
@@ -187,7 +187,7 @@ struct Scope {
 
 From here, I just have to recursively descend the Ast in a form of a `Vec<AstNode>` that is recursively traversed by `Analyser::analyze` on `Analyser`.
 
-Here is an example method in `Analyser`: // TODO spell
+Here is an example method in `Analyser`:
 ```rust
 /// a helper function to make sure a variable exists
 fn make_sure_var_exists(&self, var: &str) -> Result<(), AnalysisError> {
@@ -206,19 +206,17 @@ fn make_sure_var_exists(&self, var: &str) -> Result<(), AnalysisError> {
 }
 ```
 
-The analyzer also modifies some of the ast nodes and adds the variables declared in them to them. This helps the code generator. I did not use an intermediate representation since I am not doing any code optimisation, but it seems *really* interesting. Ill definitely look into it in the future. Maybe for zig's self-hosted compiler.
+The analyzer also modifies some of the ast nodes and adds the variables declared in them to them. This helps the code generator. I did not use an intermediate representation since I am not doing any code optimisation, but it seems *really* interesting. Ill definitely look into it in the future. Maybe for zig's self-hosted compiler. I actually came up with the exact same method of adding `Option<_>` fields to the Awt that would be mutated by the Analyser as Tristan Hume did when [writing his compiler](https://thume.ca/2019/04/18/writing-a-compiler-in-rust/) without even knowing it! His blog post actually was the origional thing that inspired my interest in compilers, but I didn't understand a lot of it.
 
-*Code Generation* // TODO arrays
-
-> Note: This section assumes you have an understanding of how the stack works in assembly.
+**Code Generation**
 
 This was the hardest part by far to implement. That will make it more fun to talk about!
 
 I have a struct `Code` that tries to mirror assembly with sections. It has `text` and `bss`. These each have `instructions` which is a `Vec<String>`. In hindsight, it would have been simpler to just have a `String` instead of `Vec<String>` for storing the code.
 
-> Note about optimisation: In the actual compiler, I am not worried about optimisation. I may worry about this later, but I have heard that "premature optimisation is the root of all evil". This is why I use types like `String` and `Vec` that are heap allocated a lot. The compiler is still pretty fast, I assume this is because the lack of optimisation in the generated code and the fact that it is ~1.3 pass (I count sorting the Ast as .2 and removing `_start` if compiling for a library as .1).
+> Note about optimisation: In the actual compiler, I am not worried about optimisation. This is why I use types like `String` and `Vec` that are heap allocated a lot. The compiler is still pretty fast, I assume this is because the lack of optimisation in the generated code and the fact that it is ~1.3 pass (I count sorting the Ast as .2 and removing `_start` if compiling for a library as .1).
 
-Then I just loop over the Ast and do code generation. The actual code is boring, so Ill just tell you about the interesting parts. The part that I found the *most* interesting was stack allocation. It took me about a week to think of an algorithm to impliment this. First of all, stack allocation is used where the data is deallocated after it goes out of scope (when the function or if statement ends). It is actually so difficult that I have to keep track of the stack pointer offset in code. The general algorithm looks something like this:
+Then I just loop over the Ast and do code generation. The part that I found the *most* interesting was stack allocation. It took me about a week to think of an algorithm to impliment this. First of all, stack allocation is used where the data is deallocated after it goes out of scope (when the function or if statement ends). It is actually so difficult that I have to keep track of the stack pointer offset in code. The general algorithm looks something like this:
 
 1. At the time of allocation, insert into a `HashMap<String, u32>` (lets call it `initalized_vars`) the name of the var, current stack pointer - the place of the var that is initialized in all the vars that were initialized in that block.
 ```rust
@@ -229,7 +227,7 @@ self.initalized_vars.insert(varname, self.stack_p_offset - place);
 self.stack_p_offset - self.initalized_vars.get(varname);
 ```
 
-Yeah, that algorithm took me a *really* long time to come up with, but it payed off in the end. If you have a better one please tell me :). I have taken I deeper look at the codegen in the zig programming language and it seems like they use a variation on this algorithm, so I think its good.
+Yeah, that algorithm took me a *really* long time to come up with, but it payed off in the end. If you have a better one please tell me :). I have taken I deeper look at the codegen in the zig programming language and it seems like they use this [same algorithm](https://github.com/ziglang/zig/blob/master/src/codegen.zig#L313), so I think its good. When implementing arrays, I used a slight variation on this algorithm.
 
 Since I also support writing libraries, I have an option to filter out `_start` when generating the code.
 
@@ -243,6 +241,6 @@ I am really glad I chose to write a compiler. It took ~50 hours, but I am very g
 
 Here is a list of things I learned:
 
-* Testing: I have not done very much testing in previous projects so in this project I did. I'm not really sure what type of testing it was. I tested the compiler and the stdout from the generated code. The compiler tests were testing the generated data structures for the lexer and parser and regression tests for the analyzer and code generator. I implemented the stdout tests with 2 scripts. `gen_output.sh` would run every .ez file in the tests directory and store its output. `test.sh` would run every .ez file in the tests directory and check it against what `gen_output.sh` generated. Even if I didn't catch many bugs with all this testing, it felt satisfying to see 60 tests passing!
+* Testing: I have not done very much testing in previous projects so in this project I did. I'm not really sure what type of testing it was. I tested the compiler and the stdout from the generated code. The compiler tests were testing the generated data structures for the lexer and parser and regression tests for the analyzer and code generator. I implemented the stdout tests with 2 scripts. `gen_output.sh` would run every .ez file in the tests directory and store its output. `test.sh` would run every .ez file in the tests directory and check it against what `gen_output.sh` generated. Even if I didn't catch many bugs with all this testing, it felt satisfying to see ~60 tests passing! I also setup Github Actions and had it run the tests on any pushes to master. I ran into a weird bug with nasm, my assembler, in which the feature set on Ubuntu was different than on Arch Linux. I had to dumb down some code so that it would also run on Ubuntu.
 * Recursion: I had known about recursion before writing this compiler, and had implemented some recursive algorithms, but I felt this really cemented the idea in my head. With 2 of the 4 main compiler steps using a recursive algorithm (parsing and analyzing) I feel like I have a very good understanding of recursion. I also discovered a pattern with recursive methods on a struct. This way, data can be shared between methods without passing it between functions in a cumbersome way.
 * General Software Design: I feel like I have just learned a lot about designing software from this project. It is biggest project I have done and I am pretty happy with the design. The code for lexing, parsing, and analyzing is pretty nice. The code quality goes downhill when you get to `codegen.rs`. I attribute this to not using recursion: this method requires a lot of repeated code that could be avoided with recursion.
