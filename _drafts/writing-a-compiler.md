@@ -114,7 +114,7 @@ enum LexerState {
 }
 ```
 
-Then to lex I just iterate through all the characters in the input string and match to them with the state. If I see a `'<'` and am in the `Start` state, then I will set the state to `SawLessThan`. Then if I see an `'='`, I will append a `GreaterEquals` token and set the state to start, and if I see anything else, I will append a `GreaterThan` and set the state to start and go one character back. If I am in the `InNum` state and see a number then I will append it to the intermediate string and keep going. If I see something else then I will set the character back one and set the state to `Start`. I think you get the gist of this approach.
+Then to lex I just iterate through all the characters in the input string and match to them with the state. If I see a `'<'` and am in the `Start` state, then I will set the state to `SawLessThan`. Then if I see an `'='`, I will append a `GreaterEquals` token and set the state to start, and if I see anything else, I will append a `GreaterThan` and set the state to start and go one character back. If I am in the `InNum` state and see a number, then I will append it to the intermediate string and keep going. If I see something else, then I will set the character back one and set the state to `Start`. I think you get the gist of this approach.
 
 To get an idea of even _how_ to write a Tokenizer/lexer I started reading the source code of the [zig](https://github.com/ziglang/zig) programming language (it is aimed to be a replacement to c). The codebase is in c++/zig which is similar enough to Rust to understand. It is also relatively small. It is in just one flat directory with around 30 files. I found this much easier to navigate than the [Rust](https://github.com/rust-lang/rust) codebase, which has _tons_ of directories. I would recommend the zig language for learning how to write a language.
 
@@ -223,7 +223,7 @@ self.initalized_vars.insert(varname, self.stack_p_offset - place);
 self.stack_p_offset - self.initalized_vars.get(varname);
 ```
 
-Yeah, that algorithm took me a *really* long time to come up with, but it payed off in the end. If you have a better one please tell me :). I have taken I deeper look at the codegen in the zig programming language and it seems like they use this [same algorithm](https://github.com/ziglang/zig/blob/03ae77b8b02eef4da09a6b0de12d6fb0192b81d4/src/codegen.zig#L320), so I think its good. When implementing arrays, I used a slight variation on this algorithm.
+Yeah, that algorithm took me a *really* long time to come up with, but it payed off in the end. If you have a better one, please tell me :). I have taken I deeper look at the codegen in the zig programming language and it seems like they use this [same algorithm](https://github.com/ziglang/zig/blob/03ae77b8b02eef4da09a6b0de12d6fb0192b81d4/src/codegen.zig#L320), so I think its good. When implementing arrays, I used a slight variation on this algorithm.
 
 Since I also support writing libraries, I have an option to filter out `_start` when generating the code.
 Here is an example method to generate code for an expression:
