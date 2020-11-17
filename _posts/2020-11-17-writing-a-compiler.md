@@ -1,8 +1,7 @@
 ---
 layout: post
 title: "Writing A Compiler"
-date: TODO
-date: 2020-10-07
+date: 2020-11-17
 categories: code
 ---
 
