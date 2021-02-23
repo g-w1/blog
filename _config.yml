@@ -28,6 +28,11 @@ github_username:  g-w1
 
 # Build settings
 theme: minima
+minima:
+  skin: dark
+header_pages:
+  - projects.markdown
+  - about.markdown
 plugins:
   - jekyll-feed
 
