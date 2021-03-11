@@ -177,8 +177,8 @@ pub fn Container(comptime inner: type) type {
        inside: type, 
     };
 }
-const instance = Container(u32) { .inside = 1234 };
-const instance = Container([]const u8) { .inside = "Zig Generics Are Cool" };
+const instance_u32 = Container(u32) { .inside = 1234 };
+const instance_string = Container([]const u8) { .inside = "Zig Generics Are Cool" };
 ```
 
 Since types are first class values at compile-time in Zig, lets make a function that writes our header structs to out code (`std.ArrayList(u8)`).
@@ -242,3 +242,211 @@ e_ehsize: [2]u8 = @bitCast([2]u8, (@as(u16, 0x40))),
 This could be determined by the size of the number as we already cast it to a u16, so no reason to specify the size again in a different format.
 
 Okay, enough talking about Zig, back to ELF!
+
+As you have seen, an elf file can be represented as an array/buffer of u8s.
+To write the headers, we just look at what each field is in the header, fill it out with the appropriate value, and then write it to the code buffer. No magic! To understand the elf file format more, I **highly** recommend reading the [ELF article on Wikipedia](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) and just implementing some of the structs (with *hand written* comments) in whatever language you use. 
+
+In an ELF header there is an `e_entry` field that contains the offset of the entry point (where the kernel should start executing) you can just set this to some code put in after the ELF header and program header and try executing the file! 
+Our buffer/file looks something like this so far:
+```
+0x00 (0):
+  ELF HEADER
+    ...
+    e_entry: 0x00000056
+0x40 (64):
+  PROGRAM HEADER(s)
+0x38 (56):
+  EXECUTABLE CODE
+however long the executable code is
+```
+Note: this is the exact same layout as the assembly code we saw earlier.
+
+It segfaults :(.
+
+This is because the offset of `e_entry` is relative to the *offset in memory* not in the image/buffer/file. From what i've seen, linux executables are loaded into memory at 0x400000, so we must add that to the e_entry point. I have this is my `main.zig` file:
+```zig
+pub const base_point: u64 = 0x400000;
+```
+
+Now it works!
+
+But we don't get any output with objdump: 
+
+```
+❯ objdump -D ./code                                                                                                                                                                                                 
+./code:     file format elf64-x86-64
+```
+
+This is because it does not have any sections, section headers, or a section header string table.
+
+To get output with objdump we must do all 3. Additionally, this will allow us to have different sections for bss, data, and text (code).
+
+A section header goes after the sections (data, bss, text, shstrtab, strtab, rodata).
+
+It is just another type of header.
+I define it like this:
+```zig
+const SHT_NOBITS: u32 = 8;
+const SHT_NULL: u32 = 0;
+const SHT_PROGBITS: u32 = 1;
+const SHT_STRTAB: u32 = 3;
+
+const SectionHeader = struct {
+    /// offset into .shstrtab that contains the name of the section
+    sh_name: [4]u8,
+
+    /// type of this header
+    sh_type: [4]u8,
+
+    /// attrs of the section
+    sh_flags: [8]u8,
+
+    /// virtual addr of section in memory
+    sh_addr: [8]u8,
+
+    /// offset in file image
+    sh_offset: [8]u8,
+
+    /// size of section in bytes (0 is allowed)
+    sh_size: [8]u8,
+
+    /// section index
+    sh_link: [4]u8,
+
+    /// extra info abt section
+    sh_info: [4]u8,
+
+    /// alignment of section (power of 2)
+    sh_addralign: [8]u8,
+
+    /// size of bytes of section that contains fixed-size entry otherwise 0
+    sh_entsize: [8]u8,
+};
+```
+
+Now our code looks like this: 
+```
+0x00 (0):
+  ELF HEADER
+    ...
+    e_entry: 0x00000056
+0x40 (64):
+  PROGRAM HEADER(s)
+0x38 (56):
+section .text
+  EXECUTABLE CODE
+section .data
+  immutable data
+section .shstrtab
+  the names of all the sections
+section .bss
+  uninitalized data (this is special because it doesn't take any space in the executable, it only takes space after it is loaded by the kernel in memory)
+however long the executable code is
+section headers * how many there are (4)
+```
+
+For the executable code, I just hard coded some x64 machine code into the binary like this (until I wrote a brainfuck x64 backend):
+```zig
+const machinecode = [_]u8{ 0xb8, 0xe7, 0x00, 0x00, 0x00, 0x48, 0x8b, 0x3c, 0x25, 0x87, 0x00, 0x40, 0x00, 0x0f, 0x05, 0x0 };
+```
+
+Objdumped we get nice output: 
+```
+❯ objdump -D ./code 
+
+./code:     file format elf64-x86-64
+
+
+Disassembly of section .text:
+
+0000000000400078 <.text>:
+  400078:       b8 e7 00 00 00          mov    $0xe7,%eax
+  40007d:       48 8b 3c 25 87 00 40    mov    0x400087,%rdi
+  400084:       00 
+  400085:       0f 05                   syscall 
+        ...
+
+Disassembly of section .data:
+
+0000000000400088 <.data>:
+  400088:       48                      rex.W
+  400089:       65 6c                   gs insb (%dx),%es:(%rdi)
+  40008b:       6c                      insb   (%dx),%es:(%rdi)
+  40008c:       6f                      outsl  %ds:(%rsi),(%dx)
+  40008d:       20 57 6f                and    %dl,0x6f(%rdi)
+  400090:       72 6c                   jb     0x4000fe
+  400092:       64                      fs
+
+Disassembly of section .bss:
+
+00000000004000af <.bss>:
+        ...
+❯ 
+```
+The data section is just "Hello World", but objdump tries to interpret it as x64 code so we get some weird results.
+And readelfd we get the right results too 
+
+```
+❯ readelf -a ./code 
+ELF Header:
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Class:                             ELF64
+  Data:                              2's complement, little endian
+  Version:                           1 (current)
+  OS/ABI:                            UNIX - System V
+  ABI Version:                       0
+  Type:                              EXEC (Executable file)
+  Machine:                           Advanced Micro Devices X86-64
+  Version:                           0x1
+  Entry point address:               0x400078
+  Start of program headers:          64 (bytes into file)
+  Start of section headers:          175 (bytes into file)
+  Flags:                             0x0
+  Size of this header:               64 (bytes)
+  Size of program headers:           56 (bytes)
+  Number of program headers:         1
+  Size of section headers:           64 (bytes)
+  Number of section headers:         5
+  Section header string table index: 3
+
+Section Headers:
+  [Nr] Name              Type             Address           Offset
+       Size              EntSize          Flags  Link  Info  Align
+  [ 0]                   NOBITS           0000000000000000  00000000
+       0000000000000000  0000000000000000           0     0     0
+  [ 1] .text             PROGBITS         0000000000400078  00000078
+       0000000000000010  0000000000000000           0     0     0
+  [ 2] .data             PROGBITS         0000000000400088  00000088
+       000000000000000b  0000000000000000           0     0     0
+  [ 3] .shstrtab         STRTAB           0000000000400093  00000093
+       000000000000001c  0000000000000000           0     0     0
+  [ 4] .bss              NOBITS           00000000004000af  000000af
+       00000000deadbeef  0000000000000000           0     0     0
+Key to Flags:
+  W (write), A (alloc), X (execute), M (merge), S (strings), I (info),
+  L (link order), O (extra OS processing required), G (group), T (TLS),
+  C (compressed), x (unknown), o (OS specific), E (exclude),
+  l (large), p (processor specific)
+
+There are no section groups in this file.
+
+Program Headers:
+  Type           Offset             VirtAddr           PhysAddr
+                 FileSiz            MemSiz              Flags  Align
+  LOAD           0x0000000000000000 0x0000000000400000 0x0000000000400000
+                 0x00000000000001ef 0x00000000000001ef  RWE    0x100
+
+ Section to Segment mapping:
+  Segment Sections...
+   00     
+
+There is no dynamic section in this file.
+
+There are no relocations in this file.
+
+The decoding of unwind sections for machine type Advanced Micro Devices X86-64 is not currently supported.
+
+No version information found in this file.
+```
+
+We are now ready write a brainfuck backend.
