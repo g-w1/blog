@@ -1,13 +1,15 @@
 ---
 layout: post
 title: "Learning About ELF With Zig"
-date: 2021-3-08 08:47:21 -0400
+date: 2021-3-15 08:47:21 -0400
 categories: zig low-level
 ---
 
-ELF is an object format that is used widely in Linux and other modern operating systems. I wanted to learn about it to become more fluent in low-level code as well as start contributing to the zig sELF-hosted ELF linker backend.
+ELF is an object format that is used widely in Linux and other modern operating systems. I wanted to learn about it to become more fluent in low-level code as well as start contributing to the zig self-hosted ELF linker backend.
 
 This post will go through how I learned about the ELF format and applied it to create a minimal linker. I could then use this linker to link some x86_64 brainfuck code. The next post will go over how linked and created the brainfuck code since it mixes with this "linker" a little.
+
+> Note: this "linker" does no relocations so it is not viable to link actual projects with functions and stuff. It was just a fun project to learn about ELF/x64 code.
 
 # Setting Things Up
 
@@ -167,7 +169,7 @@ Note that we can provide default values for struct values in Zig. This is helpfu
 
 ## Writing To Stuff
 
-Before we write to a file, we must write the headers to a buffer so that we can add the machine code after them (we can do multiple writes to a file, but that is innefecient).
+Before we write to a file, we must write the headers to a buffer so that we can add the machine code after them (we can do multiple writes to a file, but that is inefficient).
 
 In Zig, we can represent a code buffer as a `std.ArrayList(u8)`. Notice how Zig handles generics: a generic structure is just a function that takes a type and returns one:
 
@@ -205,7 +207,7 @@ try writeTypeToCode(&dat, ProgHeader, .{
 });
 ```
 
-This is how we use it, provide our code, the type of the struct and an instance of it. The function iterates over all the fields of the struct at comptime with an `inline for` over [std.meta.fields(T)](https://github.com/ziglang/zig/blob/4e9894cfc4c8e2e1d3e01aa2e3400b295b0ee2df/lib/std/meta.zig#L445-L459), switches on the type of that field, if it is just a primitive u8, it just writes that to the code buffer by using the `@field` builtin. That builtin allows you to get/set a field of a struct with a comptime known string (`[]const u8`). Now heres where it gets interesting, lets say we have a field like this:
+This is how we use it: provide our code buffer, the type of the struct and an instance of it. The function iterates over all the fields of the struct at comptime with an `inline for` over [std.meta.fields(T)](https://github.com/ziglang/zig/blob/4e9894cfc4c8e2e1d3e01aa2e3400b295b0ee2df/lib/std/meta.zig#L445-L459), switches on the type of that field, if it is just a primitive u8, it just writes that to the code buffer by using the `@field` builtin. That builtin allows you to get/set a field of a struct with a comptime known string (`[]const u8`). Now heres where it gets interesting, lets say we have a field like this:
 
 
 ```zig
@@ -217,7 +219,7 @@ This is an array of 2 `u8`s. So this would use the else case in the switch as th
 
 In my opinion, this is a pretty cool example of compile time meta-programming in Zig.
 
-> Note: An inline for is a for loop that the compiler *must* unwrap. If it can't unwrap it, it is a compile error. This is useful when iterating over data that you know is known at comptime. `std.meta.fields` on a struct returns a `[]const @import("builtin").TypeInfo.StructField`. Here is the whole function:
+> Note: An `inline for`` is a `for` loop that the compiler *must* unwrap. If it can't unwrap it, it is a compile error. This is useful when iterating over data that you know is known at comptime. `std.meta.fields` on a struct returns a `comptime []const @import("builtin").TypeInfo.StructField`. Here is the whole function:
 ```zig
 pub fn fields(comptime T: type) switch (@typeInfo(T)) {
     .Struct => []const TypeInfo.StructField,
@@ -266,7 +268,7 @@ This could be determined by the size of the number as we already cast it to a u1
 ```zig
 e_ehsize: u16 = 0x40,
 ```
-> I didn't want to use this because it is higher level, and to the machine, **everything** is a u8 and I wanted to stay pretty low level.
+> I didn't want to use this because it is higher level, and to the machine, **everything** is a u8 and I wanted to stay pretty low level. Also comptime meta-programming is fun.
 
 ### Okay, enough talking about Zig, back to ELF!
 
@@ -501,6 +503,6 @@ _ = try file.write(code.items);
 
 I wrote this post because I wanted to de-magicify how executables work. They are not some magic incarnation that only fancy compilers can output. In a few hundred lines of code, you can write a "linker" that can output an executable. With a few more, a "compiler" can be written.
 
-All the code in this post can be found [here](https://github.com/g-w1/zelf/commit/7a2030984fc808d46a63937aef42de1c41f82672).
+All the code in this post can be found [here](https://github.com/g-w1/zelf/commit/7a2030984fc808d46a63937aef42de1c41f82672). Note, the later commits show the brainfuck backend, so if you want to read them you can, although at the time of writing, they are not done.
 
 We are now ready write a brainfuck code generation backend for our linker! (In the next post!)
