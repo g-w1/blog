@@ -7,16 +7,16 @@ categories: zig low-level
 
 ELF is an object format that is used widely in Linux and other modern operating systems. I wanted to learn about it to become more fluent in low-level code as well as start contributing to the zig sELF-hosted ELF linker backend.
 
-This post will go through how I learned about the ELF format and applied it to create a minimal linker. I could then use this linker to link some x86_64 brainfuck code. This post will also go over how linked and created the brainfuck code since it mixes with the linker a little.
+This post will go through how I learned about the ELF format and applied it to create a minimal linker. I could then use this linker to link some x86_64 brainfuck code. The next post will go over how linked and created the brainfuck code since it mixes with this "linker" a little.
 
 # Setting Things Up
 
 The ELF file format is a binary file format, meaning that humans can not read it without special tools. Here are some of the tools I used that helped me a lot:
 
 * hexl-mode - an emacs mode to read binary files by converting them to human-readable hex
-* xxd - I used xxd to write a [script](https://github.com/g-w1/bz/tree/TODO) that can give a human readable diff of binary files.
+* xxd - print binary files as hex - useful for diffing binary files in a human readable way
 * readelf - this was very helpful for making sure my ELF was conforming to the ELF spec/seeing what the operating system thought of my ELF file.
-* objdump - this was useful for making sure my sections/section header table matched the spec (NOTE: llvm-objdump was much more helpful here as it was better at detecting errors/showing them TODO pic/text)
+* objdump - this was useful for making sure my sections/section header table matched the spec (NOTE: llvm-objdump was much more helpful here as it was better at detecting errors/showing them ![llvm-objdump is better](/blog/assets/llvm-od.png))
 
 # Starting to generate code
 
@@ -65,7 +65,7 @@ ecode:
 filesize equ  $ - $$
 ```
 
-Since this is just (intel) assembly, we can represent these as structs in zig: 
+Since this is just (intel) assembly, we can represent these as structs in zig:
 
 ```zig
 const ElfHeader = struct {
@@ -174,7 +174,7 @@ In Zig, we can represent a code buffer as a `std.ArrayList(u8)`. Notice how Zig 
 ```zig
 pub fn Container(comptime Inner: type) type {
     return struct {
-       inside: Inner, 
+       inside: Inner,
     };
 }
 const instance_u32 = Container(u32) { .inside = 1234 };
@@ -205,7 +205,7 @@ try writeTypeToCode(&dat, ProgHeader, .{
 });
 ```
 
-This is how we use it, provide our code, the type of the struct and an instance of it. The function iterates over all the fields of the struct at comptime with an `inline for` over [std.meta.fields(T)](https://github.com/ziglang/zig/blob/4e9894cfc4c8e2e1d3e01aa2e3400b295b0ee2df/lib/std/meta.zig#L445-L459), switches on the type of that field, if it is just a primitive u8, it just writes that to the code buffer by using the `@field` builtin. That builtin allows you to get/set a field of a struct with a comptime known string (`[]const u8`). Now heres where it gets interesting, lets say we have a field like this: 
+This is how we use it, provide our code, the type of the struct and an instance of it. The function iterates over all the fields of the struct at comptime with an `inline for` over [std.meta.fields(T)](https://github.com/ziglang/zig/blob/4e9894cfc4c8e2e1d3e01aa2e3400b295b0ee2df/lib/std/meta.zig#L445-L459), switches on the type of that field, if it is just a primitive u8, it just writes that to the code buffer by using the `@field` builtin. That builtin allows you to get/set a field of a struct with a comptime known string (`[]const u8`). Now heres where it gets interesting, lets say we have a field like this:
 
 
 ```zig
@@ -217,7 +217,7 @@ This is an array of 2 `u8`s. So this would use the else case in the switch as th
 
 In my opinion, this is a pretty cool example of compile time meta-programming in Zig.
 
-> Note: An inline for is a for loop that the compiler *must* unwrap. If it can't unwrap it, it is a compile error. This is useful when iterating over data that you know is known at comptime. `std.meta.fields` on a struct returns a `[]const @import("builtin").TypeInfo.StructField`. Here is the whole function: 
+> Note: An inline for is a for loop that the compiler *must* unwrap. If it can't unwrap it, it is a compile error. This is useful when iterating over data that you know is known at comptime. `std.meta.fields` on a struct returns a `[]const @import("builtin").TypeInfo.StructField`. Here is the whole function:
 ```zig
 pub fn fields(comptime T: type) switch (@typeInfo(T)) {
     .Struct => []const TypeInfo.StructField,
@@ -262,12 +262,18 @@ e_ehsize: [2]u8 = @bitCast([2]u8, (@as(u16, 0x40))),
 ```
 This could be determined by the size of the number as we already cast it to a u16, so no reason to specify the size again in a different format.
 
+> Note: an alternative could be just this:
+```zig
+e_ehsize: u16 = 0x40,
+```
+> I didn't want to use this because it is higher level, and to the machine, **everything** is a u8 and I wanted to stay pretty low level.
+
 ### Okay, enough talking about Zig, back to ELF!
 
 As you have seen, an ELF file can be represented as an array/buffer of u8s.
-To write the headers, we just look at what each field is in the header, fill it out with the appropriate value, and then write it to the code buffer. No magic! To understand the ELF file format more, I **highly** recommend reading the [ELF article on Wikipedia](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) and just implementing some of the structs (with *hand written* comments) in whatever language you use. 
+To write the headers, we just look at what each field is in the header, fill it out with the appropriate value, and then write it to the code buffer. No magic! To understand the ELF file format more, I **highly** recommend reading the [ELF article on Wikipedia](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) and just implementing some of the structs (with *hand written* comments) in whatever language you use.
 
-In an ELF header there is an `e_entry` field that contains the offset of the entry point (where the kernel should start executing) you can just set this to some code put in after the ELF header and program header and try executing the file! 
+In an ELF header there is an `e_entry` field that contains the offset of the entry point (where the kernel should start executing) you can just set this to some code put in after the ELF header and program header and try executing the file!
 Our buffer/file looks something like this so far:
 ```
 0x00 (size 0x40):
@@ -306,7 +312,7 @@ Now we have:
 0x00 (size 0x40):
   ELF HEADER
     ...
-    e_entry: 0x00400056
+    e_entry: 0x00400078
 0x40 (size 0x56):
   PROGRAM HEADER(s)
 0x78 (size however long the executable code is)
@@ -315,10 +321,10 @@ Now we have:
 
 Now it works!
 
-But we don't get any output with objdump: 
+But we don't get any output with objdump:
 
 ```
-❯ objdump -D ./code                                                                                                                                                                                                 
+❯ objdump -D ./code
 ./code:     file format ELF64-x86-64
 ```
 
@@ -369,18 +375,18 @@ const SectionHeader = struct {
 };
 ```
 
-Now our code looks like this: 
+Now our code looks like this:
 ```
 0x00 (size 0x40):
   ELF HEADER
     ...
-    e_entry: 0x00000056
+    e_entry: 0x00000078
 0x40 (size 0x56):
   PROGRAM HEADER(s)
-0x78 (size however long the sections are code is)
+0x78 (size however long the sections are)
 	section .text: SHT_PROGBITS
 	  EXECUTABLE CODE
-	section .data: SHT_PROGBITS TODO find out what SHT .data is
+	section .data: SHT_PROGBITS
 	  immutable data
 	section .shstrtab: SHT_STRTAB
 	  the names of all the sections
@@ -389,7 +395,7 @@ Now our code looks like this:
 section headers * how many there are (4)
 ```
 
-Objdumped we get nice output: 
+Objdumped we get nice output:
 ```
 ❯ objdump -D ./code -Mintel
 
@@ -417,12 +423,12 @@ Disassembly of section .data:
   400092:	64                   	fs
 ```
 The data section is just "Hello World", but objdump tries to interpret it as x64 code so we get some weird results.
-And readelfd we get the right results too 
+And readelfd we get the right results too
 
 ```
-❯ readelf -a ./code 
+❯ readelf -a ./code
 ELF Header:
-  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 
+  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
   Class:                             ELF64
   Data:                              2's complement, little endian
   Version:                           1 (current)
@@ -471,7 +477,7 @@ Program Headers:
 
  Section to Segment mapping:
   Segment Sections...
-   00     
+   00
 
 There is no dynamic section in this file.
 
@@ -493,4 +499,8 @@ _ = try file.write(code.items);
 
 [Defer](https://ziglearn.org/chapter-1/#defer) in zig is useful for freeing resources. A defer will execute at the end of the current block.
 
-We are now ready write a brainfuck backend!
+I wrote this post because I wanted to de-magicify how executables work. They are not some magic incarnation that only fancy compilers can output. In a few hundred lines of code, you can write a "linker" that can output an executable. With a few more, a "compiler" can be written.
+
+All the code in this post can be found [here](https://github.com/g-w1/zelf/commit/7a2030984fc808d46a63937aef42de1c41f82672).
+
+We are now ready write a brainfuck code generation backend for our linker! (In the next post!)
