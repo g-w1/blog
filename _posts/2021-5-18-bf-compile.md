@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Writing A Brain**** Compiler (part 2)"
-date: 2021-5-20 08:47:21 -0400
+date: 2021-5-23 00:42:21 -0400
 categories: zig low-level compiler
 ---
 
@@ -83,7 +83,7 @@ output: []const u8,
 ```
 
 field, but I left it like this so in the future I could add more fields, for storing different info about the generated code. I used the `r10` as the sort of "array pointer" for the code, the thing that > and < increment and decrement. I could have used an address in data, but decided just using a register was easier. The main loop for generating the code is small enough that I can paste it here:
-> 🤦 moment: so I was reading the wikipedia page to write this article and realized that I read the brainfuck spec wrong. :^( I was jumping backwards instead of forwards (or maybe in even weirder ways), so most programs worked, but some didn't. This is how I am bad at reading stuff.
+> 🤦 moment: so I was reading the wikipedia page to write this article and realized that I read the brainfuck spec wrong. :^( I was jumping backwards instead of forwards (or maybe in even weirder ways), so most programs worked, but some didn't. It is always good to make sure to read carefully! (and will save you a lot of time)
 
 
 ```zig
@@ -156,7 +156,7 @@ pub fn gen(gpa: *std.mem.Allocator, bfsrc: []const u8) !Code {
     return Code{ .output = code.toOwnedSlice() };
 }
 ```
-`read(` looks like this:
+as an example, `read(` looks like this:
 ```zig
 fn read(c: *std.ArrayList(u8)) !void {
     // mov rax, 0
@@ -201,6 +201,8 @@ fn syscall(c: *std.ArrayList(u8)) !void {
 }
 ```
 Hopefully this gives you a sense of how it all fits together. Its just machine code all the way down!
+
+
 The way I got the x64 opcodes was just writing then in nasm, then assembling the assembly file, then using objdump to see the opcodes. I still don't fully understand the instruction encoding (I see myself learning this in the future if I want to do more compiler stuff), so this seemed like the easiest way.
 I used the `r10` x64 register as the pointer to the current cell. 
 Some pain points I ran into:
