@@ -1,18 +1,17 @@
 ---
 layout: post
-title: "Writing A Brainfuck Compiler (part 2)"
+title: "Writing A Brain**** Compiler (part 2)"
 date: 2021-5-20 08:47:21 -0400
 categories: zig low-level compiler
 ---
 
+# My Question Was Answered
 In the [previous post](https://g-w1.github.io/blog/zig/low-level/2021/03/15/elf-linux.html) I asked a question, and got an answer! My question was: "From what i've seen, linux executables are loaded into memory at 0x400000 (if someone knows why this is, please tell me!)" 
 
 
 Rafael Ávila de Espíndola kindly replied with this answer:
 
-"The value is arbitrary, and not directly imposed by linux. In fact, it
-is the executable that sets it. In your asm file you have
-
+> The value is arbitrary, and not directly imposed by linux. In fact, it is the executable that sets it. In your asm file you have
 ```
 org 0x400000
 ...
@@ -22,45 +21,46 @@ phdr:           ; Elf64_Phdr
   dq  0         ; p_offset
   dq  $$        ; p_vaddr
 ```
-
 So you are creating a `PT_LOAD (type 1)` with a `p_vaddr` a bit above
 0x400000. This is what the kernel uses to decide where to put your
 binary.
-
 BTW, it is better if the value is page aligned. It looks like the linux
 kernel aligns it for you, but it is a bit more clear if the value in the
 file is already aligned.
-
 As for why 0x400000 is common, that is quite a bit of archaeology. A good
 place to look is the lld history, as we had to do a bit of archaeology
 when creating it. LLD started by using the smallest value that would
 work: the second page. The current value was changed in
-
-https://github.com/llvm/llvm-project/commit/c9de3b4d267bf6c7bd2734a1382a65a8812b07d9 
-
+[https://github.com/llvm/llvm-project/commit/c9de3b4d267bf6c7bd2734a1382a65a8812b07d9](https://github.com/llvm/llvm-project/commit/c9de3b4d267bf6c7bd2734a1382a65a8812b07d9)
 So the reason for the 0x400000 (4MiB) is that that is the size of
 superpages in some x86 modes.
-
 It looks like the gnu linker used that for x86-64 too, but that is
 probably an oversight. LLD uses 2MiB since that is the large page size in
 that architecture. It was set in
-
-https://github.com/llvm/llvm-project/commit/8fd0196c6fd1bb3fed20418ba319677b66645d9c 
-
+[https://github.com/llvm/llvm-project/commit/8fd0196c6fd1bb3fed20418ba319677b66645d9c](https://github.com/llvm/llvm-project/commit/8fd0196c6fd1bb3fed20418ba319677b66645d9c)
 Welcome to the world of linkers :-)
-
 Cheers,
-Rafael"
+Rafael
 
 I am grateful that someone went out of their way to help me.
 
 
-The Zig self-hosted linker has this code, and I do not know why (loads it at 8mb)
+The Zig self-hosted linker has this code:
 ```zig
 const default_entry_addr = 0x8000000;
 ```
+andrewrk (zig author) said the reason for putting it at 8mb:
+
+> note that is virtual address space; it does not actually take up 8 MiB of space
+1. (not important) there is a tradition of making that the entry point (citation needed)
+2. it works for both 32 and 64 bit address space
+3. it leaves plenty room for stuff to go before it, such as unmapped pages, to cause segfaults for null pointer and e.g. field access of null pointers
+   - also stuff like the Global Offset Table
 
 Lesson learned: one small mistake (or even change that is not ideal) can propogate through a whole industry. I was pretty interested by this :)
+It is also pretty interesting that 3 different backends use 3 different values.
+
+# Brainfuck Compiler
 
 In the previous post, I said that the next post would be about me writing a brainfuck compiler. In case you do not know, brainfuck is an esoteric programming language created in the 90's. It has 8 instructions:
 
@@ -205,11 +205,11 @@ The way I got the x64 opcodes was just writing then in nasm, then assembling the
 I used the `r10` x64 register as the pointer to the current cell. 
 Some pain points I ran into:
 
-Offset math is hard! I spent a lot of time trying to do the offset math for the conditional loops. At first, my understanding of brainfuck was wrong, so that went wrong. Then I had to learn about different sizes of backwards jumps in x86 and how to represent negative numbers in binary. `objdump` helped me a lot in seeing what was wrong, I couldn't have done this without it!
-Relocation stuff. From my understanding, a relocation is a place in a binary that you need to change based on information that you get in the future.
+* Offset math is hard! I spent a lot of time trying to do the offset math for the conditional loops. At first, my understanding of brainfuck was wrong, so that went wrong. Then I had to learn about different sizes of backwards jumps in x86 and how to represent negative numbers in binary. `objdump` helped me a lot in seeing what was wrong, I couldn't have done this without it!
+
+* Relocation stuff. From my understanding, a relocation is a place in a binary that you need to change based on information that you get in the future.
 Here is the code for making and "doing" the relocations:
 ```zig
-// NOP
             '[' => {
                 // jumped to by the closing bracket
                 try code.append(0x90);
@@ -243,18 +243,18 @@ Here is the code for making and "doing" the relocations:
                 std.mem.copy(u8, code.items[popped + 6 ..], &cast(@intCast(u32, code.items.len - popped - 10 - 1)));
             },
 ```
-I would probably use something like a hash map if I needed to do more complicated relocation stuff, but for now a stack (`std.ArrayList(u64)`) works fine. Basically, I just append 4 bytes of zero to the place in the elf binary where it shows where to jump to. With `std.mem.copy(u8, code.items[popped + 6 ..], &cast(@intCast(u32, code.items.len - popped - 10 - 1)));` I "do" the relocation. For the "cast" function, see the [previous post](https://g-w1.github.io/blog/zig/low-level/2021/03/15/elf-linux.html). This was probably the hardest part, getting the offset math right, but I did it! I used `NOP`s (aka 0x90) for the locations to jump to, just for simplicity.
+I would probably use more complicated data structures if I needed to do more complicated relocation stuff, but for now a stack (`std.ArrayList(u64)`) works fine. Basically, I just append 4 bytes of zero to the place in the elf binary where it shows where to jump to. With `std.mem.copy(u8, code.items[popped + 6 ..], &cast(@intCast(u32, code.items.len - popped - 10 - 1)));` I "do" the relocation. For the "cast" function, see the [previous post](https://g-w1.github.io/blog/zig/low-level/2021/03/15/elf-linux.html). This was probably the hardest part, getting the offset math right, but I did it! I used `NOP`s (aka 0x90) for the locations to jump to, just for simplicity.
 
-I thought I could just use `inc r10` to move the pointer to the next cell, but this is not the case. Let's take a look at why:
+* I thought I could just use `inc r10` to move the pointer to the next cell, but this is not the case. Let's take a look at why:
 Using [this program](https://esolangs.org/wiki/Brainfuck#Cell_Size) for calculating the size of a brainfuck cell, we get:
-`32 bit cells`. It basically checks when it overflows I think. Due to the way pointers on x64 work. `inc` only increments it by one, so `r10` is pointing to the space in between a few cells. You actually need to do `add r10, 8` in order to make it work.
+`32 bit cells`. It basically checks when it overflows I think. Due to the way pointers on x64 work, `inc` only increments it by one, so `r10` is pointing to the space in between a few cells. You actually need to do `add r10, 8` in order to make it work.
 See this diagram (the carets are where r10 points):
 ```
 [        ][        ][        ][        ]
  ^^^^^^^^
 > inc r10
 [        ][        ][        ][        ]
-  ^^^^^^^^
+    ^^^^^^^^
 ```
 This is what happens when we just do `inc r10`, but if we `add r10, 8` then the diagram will look like this:
 ```
@@ -262,12 +262,12 @@ This is what happens when we just do `inc r10`, but if we `add r10, 8` then the 
  ^^^^^^^^
 > add r10, 8
 [        ][        ][        ][        ]
-           ^^^^^^^^
+             ^^^^^^^^
 ```
 
 We get the nice offset instead of a really weird one. (This also took me a while to debug)
 
-## Running some code!
+# Running some code!
 
 Before we talk about the "bugs" in `bz` (the name I chose for it. I know, soooo creative :P.) lets talk about the features:
 Here is a sample `bz` session.
@@ -297,8 +297,6 @@ Lets try something a little more complicated, fibonacci:
 This program doesn't terminate; you will have to kill it.
 Daniel B Cristofani (cristofdathevanetdotcom)
 http://www.hevanet.com/cristofd/brainfuck/
-% rm fib
-rm: cannot remove 'fib': No such file or directory
 % ./zig-out/bin/bz fib.bf -o fib
 % ./fib
 0
@@ -327,7 +325,7 @@ rm: cannot remove 'fib': No such file or directory
 ^C
 %
 ```
-as you can see, for the first few fibonacci numbers it works! Then it slowly goes haywire. I think the program actually calculates the right numbers as 1E01)844 looks like 144 and 2W02#633 looks like 233. I think I just have some weird miscompilation that I can't identify for printing the numbers. I am sad. But, this is good enough for now. I officially declare this project "done" for now. You can see the code for this commit [here](https://github.com/g-w1/zelf/commit/8a60a89bf1d3fee7df5a70340c70396778a55f89).
+as you can see, for the first few fibonacci numbers it works! Then it slowly goes haywire. I think the program actually calculates the right numbers as 1E01)844 looks like 144 and 2W02#633 looks like 233. I think I just have some weird miscompilation that I can't identify for printing the numbers. I am sad. But, this is good enough for now. I officially declare this project "done" for now. You can see the code for this commit [here](https://github.com/g-w1/zelf/commit/62c3bac27ad1b2e195626847f3b50181cf61357a).
 
 Sources:
 https://en.wikipedia.org/wiki/Brainfuck#Commands 
