@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Writing A Brain**** Compiler (part 2)"
+title: "Writing A Brain**** Compiler"
 date: 2021-5-23 00:42:21 -0400
 categories: zig low-level compiler
 ---
