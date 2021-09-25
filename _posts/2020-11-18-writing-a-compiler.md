@@ -3,6 +3,7 @@ layout: post
 title: "Writing A Compiler"
 date: 2020-11-18
 categories: code
+tags: code
 ---
 
 At the start of the 2020 school year I wanted to learn more about compilers so I started writing a compiler for the ez programming language that I made up. I did this as an independent study for school. I wanted to grow _dramatically_ as a thinker and learn a lot about computer science and compilers in specific. If you just want to see the project head to [github.com/g-w1/ezc](https://github.com/g-w1/ezc) or [g-w1.github.com/ezc](https://g-w1.github.io/ezc/) for documentation.

@@ -3,6 +3,7 @@ layout: post
 title: "Writing A Brain**** Compiler"
 date: 2021-5-23 00:42:21 -0400
 categories: zig low-level compiler
+tags: zig low-level compiler
 ---
 
 # My Question Was Answered
