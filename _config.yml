@@ -27,7 +27,7 @@ url: "https://g-w1.github.io" # the base hostname & protocol for your site, e.g.
 github_username:  g-w1
 
 # Build settings
-theme: minima
+# theme: minima
 markdown: kramdown
 minima:
   skin: dark
