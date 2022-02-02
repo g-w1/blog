@@ -28,6 +28,7 @@ github_username:  g-w1
 
 # Build settings
 theme: minima
+markdown: kramdown
 minima:
   skin: dark
 header_pages:
@@ -40,6 +41,7 @@ remote_theme: jekyll/minima
 
 feed:
     tags: true
+
 # Exclude from processing.
 # The following items will not be processed, by default.
 # Any item listed under the `exclude:` key here will be automatically added to
