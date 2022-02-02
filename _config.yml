@@ -35,9 +35,8 @@ header_pages:
   - projects.markdown
   - about.markdown
 plugins:
-  - jekyll-remote-theme
   - jekyll-feed
-remote_theme: jekyll/minima
+theme: minima
 
 feed:
     tags: true
