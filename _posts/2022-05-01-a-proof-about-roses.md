@@ -20,7 +20,7 @@ graphed in the domain $$ [0, 2\pi] $$.
 
 However, something peculiar happens when you change the coefficient to $$ \theta $$ ($$ n $$).
 
-When $$ n $$ is even, $$ 2n $$ petals are produced (after $$ \pi $$, the petals go back over on themselves). On the other hand, when it is odd, $$ n $$ petals are produced!
+When $$ n $$ is even, $$ 2n $$ petals are produced. On the other hand, when it is odd, $$ n $$ petals are produced (after $$ \pi $$, the petals go back over on themselves)!
 
 ![picture illustrating previous point](/blog/assets/rose.2.png)
 
