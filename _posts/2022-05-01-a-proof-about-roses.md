@@ -11,7 +11,7 @@ A proof about roses? Who would have thought!
 
 In this case, a rose is a shape generated in a polar graph from the equation
 
-$$ r = m\cos(n \theta + \phi) $$
+$$ r = A\cos(n \theta + \phi) $$
 
 graphed in the domain $$ [0, 2\pi] $$.
 
