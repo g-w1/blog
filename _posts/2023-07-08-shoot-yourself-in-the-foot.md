@@ -41,3 +41,10 @@ Some opinions:
 Have you had an experience like this?
 Email me at jacoblevgw at gmail and I'll put it below.
 
+Examples from readers:
+
+> Arian Araf: You should learn Assembly before you learn optimization
+
+> Almoctar Hassoumi: Use HTML before using a CMS like WordPress
+
+See more on [HN](https://news.ycombinator.com/item?id=36688738)
