@@ -4,6 +4,7 @@ title: "Noticing confusion in physics"
 date: 2023-10-12 9:49:00 -0400
 categories: observation
 tags: physics
+usemathjax: true
 ---
 
 I recently had a Physics test, and the only thing I got wrong was the answer to this question: "What happens to the speed of sound in a gas when the gas is heated up?"
