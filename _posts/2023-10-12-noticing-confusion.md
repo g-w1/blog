@@ -19,6 +19,10 @@ This explanation is not that convincing to me, so I'm going to do an analysis of
 1. My mind immediatly jumped to the density explanation without considering how the opposite could be correct.
 2. My first thought now is to see how much molecular speed vs density would change with an increase of speed. Since $T = \frac{\sum \frac{1}{2} m v^2}{N}$, it would follow that if you double $T$ you increase $v$ by $\sqrt{2}$. But if you double $T$, density should halve. This still leaves me confused.
 3. At this point, I'm thinking that a decrease in density does not decrease the speed of sound in gases, only in liquids and solids. I searched the answer up and found [this explanation](https://physics.stackexchange.com/questions/177997/how-can-the-speed-of-sound-increase-with-an-increase-in-temperature). This says that $v \propto \sqrt{T}$ *only*. I kept searching and found [this question](https://physics.stackexchange.com/questions/555687/why-does-the-speed-of-sound-decrease-with-increase-in-density), which cleared it up even more for me.
-4. Here is my synthesis of what happened: in solids and liquids, density *does* affect the speed of sound, but in gases, a third factor is pressure. If you increase the temperature, density can increase, but pressure also increases by a portional amount. Thus, in a gas $T \propto \sqrt{T}$ only.
+4. Here is my synthesis of what happened: in solids and liquids, density *does* affect the speed of sound, but in gases, a third factor is pressure. If you increase the temperature, density can increase, but pressure also increases by a portional amount since the molecules are hitting harder. These two changes cancel out. Thus, in a gas $v \propto \sqrt{T}$ only.
 
 So it seems the main thing that I missed was the extra factor of pressure, in addition to density. In the future, I should try to include *all* of the factors in a problem and give equal weight to the true or false answers. I'll admit thought that this might be hard to prevent in the general case since it didn't seem to be a meta-level confusion – just an object level one.
+
+--- 
+
+If you have a better explanation for this, please feel free to email me at jacoblevgw at gmail dot com and I'll put it here.
