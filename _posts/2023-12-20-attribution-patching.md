@@ -4,6 +4,7 @@ title: "An alternative intuition for attribution patching"
 date: 2023-12-20 3:00:00 -400
 categories: observation
 tags: observation programming
+usemathjax: true
 ---
 
 When I saw the following equation in the [attribution patching paper](https://arxiv.org/pdf/2310.10348.pdf), I got really confused and spent a bunch of time thinking about it: 
