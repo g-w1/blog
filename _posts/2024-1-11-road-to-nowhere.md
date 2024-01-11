@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "The Race to Nowhere: Why Students Take Classes They Don’t Like and What We Can Do About It"
-date: 2024-01-11 20:38:00 -0400
+date: 2024-01-11 09:38:00 -0400
 categories: school
 tags: school
 ---
