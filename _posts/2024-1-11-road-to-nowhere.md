@@ -6,7 +6,7 @@ categories: school
 tags: school
 ---
 
-*[Epistemic Status]: Wrote this as an 'argument paper' for English class. If I was doing an actual report, I would look way more into the truth of the matter and spend more time researching. Don't take too much away from this. Putting it up here because I feel parts are relevant and might contain interesting insights.*
+*[Epistemic Status: Wrote this as an 'argument paper' for English class. If I was doing an actual report, I would look way more into the truth of the matter and spend more time researching. Don't take too much away from this. Putting it up here because I feel parts are relevant and might contain interesting insights.]*
 
 In a survey, more than a quarter of students said that they are taking at least one class that they would not have taken if not for some outside pressure. The majority of students also said that the main pressure driving them to take classes that they did not want to take was the thought of college. Just ask any high schooler and they will tell you that college is always in the back of their mind whenever they make a decision.
 
