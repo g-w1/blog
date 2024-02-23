@@ -4,6 +4,7 @@ title: "In set theory, everything is a set"
 date: 2024-02-23 07:19:00 -0500
 categories: math
 tags: math
+usemathjax: true
 ---
 
 # In set theory, everything is a set
