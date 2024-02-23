@@ -7,8 +7,6 @@ tags: math
 usemathjax: true
 ---
 
-# In set theory, everything is a set
-
 In Unix, everything is a file; in set theory, everything is a set.
 
 ---
