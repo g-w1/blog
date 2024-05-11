@@ -10,7 +10,7 @@ Without shooting yourself in the foot, learning lacks motivation. Complexity wit
 
 <hr>
 
-At the Recurse Center Feb 2020: I watch a talk during presentations about someone optimizing a database engine. It was really complicated, and I remeber nothing about the talk itself. What I do remember is thinking to myself "this seems really complicated for no good reason." Keep in mind, I had never made a web application at that time and when I needed to store data, I just used a csv file or a python pickle file on the disk. I thought that a filesystem was sufficient for storing data.
+At the Recurse Center Feb 2020: I watch a talk during presentations about someone optimizing a database engine. It was really complicated, and I remember nothing about the talk itself. What I do remember is thinking to myself "this seems really complicated for no good reason." Keep in mind, I had never made a web application at that time and when I needed to store data, I just used a csv file or a python pickle file on the disk. I thought that a filesystem was sufficient for storing data.
 
 
 Fast forward a few months and I'm building my first web application. I don't remember what it was for, but I remember using a csv file as the database. I had to load the file into memory every time I wanted to look something up and it was just a big pain. I now understood why using a database is (sometimes) a good idea.
