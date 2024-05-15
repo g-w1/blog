@@ -13,7 +13,7 @@ $$
 L(x_\text{clean} | \operatorname{do}{(E = e_\text{corr})}) \approx L(x_\text{clean}) + (e_\text{corr} - e_\text{clean})^\top \frac{\partial}{\partial e_\text{clean}} L(x_\text{clean}| \operatorname{do}{(E = e_\text{clean})})
 $$
 
-Eventually, I realized that my confusion boiled down to the fact that I didn't really have any experience with the multivariate Taylor series, but it is actually not necessary.
+Eventually, I realized that my confusion boiled down to the fact that I didn't really have much deep experience with the multivariate Taylor series, but it is actually not necessary.
 
 I present another simple way to derive the above formula without really doing the Taylor series (it is exactly equivalent though):
 
