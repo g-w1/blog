@@ -9,7 +9,7 @@ usemathjax: true
 
 *Produced as part of the MATS Summer 2024 program, under the mentorship of Alex Turner.*
 
-A few weeks ago, I stumbled across a very weird fact: it is possible to find multiple steering vectors in a language model that activate very similar behaviors while **all being orthogonal**. This was pretty surprising to me and to some people that I talked to, so I decided to write a post about it. I don't currently have the bandwith to investigate this much more, so I'm just putting this post and the [code](https://github.com/g-w1/melbo-ortho) up.
+A few weeks ago, I stumbled across a very weird fact: it is possible to find multiple steering vectors in a language model that activate very similar behaviors while **all being orthogonal**. This was pretty surprising to me and to some people that I talked to, so I decided to write a post about it. I don't currently have the bandwidth to investigate this much more, so I'm just putting this post and the [code](https://github.com/g-w1/melbo-ortho) up.
 
 I'll first discuss how I found these orthogonal steering vectors, then share some results. Finally, I'll discuss some possible explanations for what is happening.
 
@@ -185,7 +185,7 @@ The plot matches my qualitative description pretty well. The KL divergence is ve
 I also plotted the magnitudes of all the orthogonal coding steering vectors:
 ![The magnitude plot. Up until around vector 700, the magnitude is consistently high. Gradually goes lower, eventually getting to 0.](/blog/assets/magnitude-ortho-coding-plot.png)
 
-Interestingly, the base MELBO coding vector has norm 7 (exactly 7 since MELBO constrains the norms). Yet in order to find comprable coding vectors, the model needs to go all the way up to magnitude $$\sim20$$. This suggests that there is something different about the orthogonal generated coding vectors than the original MELBO vector. In fact, when I take some of the generated orthogonal coding vectors and scale them to norm 7, they don't have the coding effect at all and instead just make the model refuse like it normally would. As the algorithm keeps progressing, the magnitudes of the generated vectors go down and eventually hit zero, at which point the vectors stop having an effect on the model.
+Interestingly, the base MELBO coding vector has norm 7 (exactly 7 since MELBO constrains the norms). Yet in order to find comparable coding vectors, the model needs to go all the way up to magnitude $$\sim20$$. This suggests that there is something different about the orthogonal generated coding vectors than the original MELBO vector. In fact, when I take some of the generated orthogonal coding vectors and scale them to norm 7, they don't have the coding effect at all and instead just make the model refuse like it normally would. As the algorithm keeps progressing, the magnitudes of the generated vectors go down and eventually hit zero, at which point the vectors stop having an effect on the model.
 
 # Hypotheses for what is happening
 
