@@ -176,7 +176,7 @@ I suspect what is going on here is that one of the vectors is slightly more "imp
 -->
 
 
-Qualitatively, it sure does seem that most of the coding vectors (up to the 800s) at least have very similar behaviors. But can we quantify this? Yes! I took the KL-divergence of the probability distribution of the network steered with the $$i$$th vector with respect to the probability distribution of the network steered with the base MELBO vector (at the last token position) and plotted it:
+Qualitatively, it sure does seem that most of the coding vectors (up to the 800s) at least have very similar behaviors. But can we quantify this? Yes! I took the KL-divergence of the probability distribution of the network steered with the $$i$$th vector with respect to the probability distribution of the network steered with the base MELBO vector (on the bomb prompt at the last token position) and plotted it:
 
 ![The KL-divergence plot. Up until around vector 700, the KL-divergence is very low. Then it jumps up.](/blog/assets/kl-div-ortho-coding-plot.png)
 
