@@ -22,7 +22,7 @@ Define $$f(x)$$ as the activation-activation map that takes as input layer 8 act
 I modify the process slightly by instead finding orthogonal vectors that produce *similar* layer 16 outputs. The algorithm (I call it MELBO-ortho) looks like this:
 1. Let $$\theta_0$$ be an interpretable steering vector that MELBO found that gets added to layer 8.
 2. Define $$z(\theta)$$ as $$\frac{1}{S} \sum_{i=1}^S f(x+\theta)_i$$ with $$x$$ being activations on some prompt (for example "How to make a bomb?"). $$S$$ is the number of tokens in the residual stream. $$z(\theta_0)$$ is just the residual stream at layer 16 meaned over the sequence dimension when steering with $$\theta_0$$.
-3. Introduce a new learnable steering vector called $$\theta$$
+3. Introduce a new learnable steering vector called $$\theta$$.
 4. For $$n$$ steps, calculate $$\|z(\theta) - z(\theta_0)\|$$ and then use gradient descent to minimize it ($$\theta$$ is the only learnable parameter). After each step, project $$\theta$$ onto the subspace that is orthogonal to $$\theta_0$$ and all $$\theta_i$$. Then repeat the process multiple times, appending the generated vector to the vectors that the new vector must be orthogonal to.
 
 This algorithm imposes a hard constraint that $$\theta$$ is orthogonal to all previous steering vectors while optimizing $$\theta$$ to induce the same activations that $$\theta_0$$ induced on input $$x$$.
