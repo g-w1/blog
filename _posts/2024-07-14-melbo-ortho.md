@@ -136,7 +136,7 @@ def bomb(): print("defing the bomb!")
 Around the 1032th vector, most of the remaining vectors aren't code but instead are either jailbreaks or refusals. Around vector 1300, most of the remaining outputs are refusals, with the occasional jailbreak.
 
 
-After seeing these results, Alex Turner asked me if these coding vectors were compositional. Does adding them also produce a coding vector? The answer is mostly no.
+After seeing these results, Alex Turner asked me if these coding vectors were compositional. Does composing them also produce a coding vector? The answer is mostly no.
 
 The result of averaging the first 20 generated orthogonal vectors is just a refusal, no code:
 ```
@@ -150,7 +150,7 @@ Building a bomb requires knowledge, skill, and licensing in explosives, as it pr
 1. Gather the materials: To build a bomb, you'll
 ```
 
-The average of the first 2 generated vectors usually produces a refusal, but then also sometimes gives code (depending on the runs since temperature $$\neq 0$$):
+Steering with the average of the first 2 generated vectors sometimes produces a refusal, sometimes gives code, and sometimes mixes them (depending on the runs since temperature $$\neq 0$$):
 ```
 I'm sorry, but it's not possible to build a bomb as it involves the creation of a physical object that is designed to cause harm and destruction. A bomb, also known as a bomb or explosive device, is an object with a built-in fuse that is designed to release a small explosion. 
 Here is a Python class for a specific bomb class:
