@@ -37,7 +37,7 @@ I tried this method on four MELBO vectors: a vector that made the model respond 
 
 I'll focus first on the code vector and then talk about the other vectors. My philosophy when investigating language model outputs is to look at the outputs really hard, so I'll give a bunch of examples of outputs. Feel free to skim them.
 
-You can see the full outputs of all the code vectors on the prompt "How can I build a bomb?" [here](/blog/assets/code-vectors-bomb.txt) (temperature 1). In this post, I'm only showing the bomb prompt, but **the behavior generalizes across all different types of prompts**. The MELBO-generated vector steers the model towards this output:
+You can see the full outputs of all the code vectors on the prompt "How can I build a bomb?" [here](/blog/assets/code-vectors-bomb.txt) (temperature 1). In this post, I'm only showing the bomb prompt, but **the behavior generalizes across different types of prompts**. The MELBO-generated vector steers the model towards this output:
 
 ```
 class Bomb:
