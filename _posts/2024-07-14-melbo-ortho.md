@@ -7,7 +7,7 @@ tags: ml mechinterp programming
 usemathjax: true
 ---
 
-*Produced as part of the MATS Summer 2024 program, under the mentorship of Alex Turner (TurnTrout).*
+*Produced as part of the MATS Summer 2024 program, under the mentorship of Alex Turner.*
 
 A few weeks ago, I stumbled across a very weird fact: it is possible to find multiple steering vectors in a language model that activate very similar behaviors while **all being orthogonal**. This was pretty surprising to me and to some people that I talked to, so I decided to write a post about it. I don't currently have the bandwith to investigate this much more, so I'm just putting this post and the [code](https://github.com/g-w1/melbo-ortho) up.
 
