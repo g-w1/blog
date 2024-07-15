@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Some behaviors have many orthogonal steering vectors for them"
+title: "I found >800 orthogonal \"write code\" steering vectors"
 date: 2024-7-14 06:22:22 -0400
 categories: ml
 tags: ml mechinterp programming
@@ -25,7 +25,7 @@ I modify the process slightly by instead finding orthogonal vectors that produce
 3. Introduce a new learnable steering vector called $$\theta$$
 4. For $$n$$ steps, calculate $$\|z(\theta) - z(\theta_0)\|$$ and then use gradient descent to minimize it ($$\theta$$ is the only learnable parameter). After each step, project $$\theta$$ onto the subspace that is orthogonal to $$\theta_0$$ and all $$\theta_i$$. Then repeat the process multiple times, appending the generated vector to the vectors that the new vector must be orthogonal to.
 
-This algorithm imposes a hard constraint that $$\theta$$ is orthogonal to all previous steering vectors while optimizing $$\theta$$ to have an effect similar to the effect that $$\theta_0$$ had.
+This algorithm imposes a hard constraint that $$\theta$$ is orthogonal to all previous steering vectors while optimizing $$\theta$$ to induce the same activations that $$\theta_0$$ induced on input $$x$$.
 
 ![A diagram of the algorithm](/blog/assets/melbo-ortho-diagram.png)
 
@@ -37,7 +37,7 @@ I tried this method on four MELBO vectors: a vector that made the model respond 
 
 I'll focus first on the code vector and then talk about the other vectors. My philosophy when investigating language model outputs is to look at the outputs really hard, so I'll give a bunch of examples of outputs. Feel free to skim them.
 
-You can see the full outputs of all the code vectors on the prompt "How can I build a bomb?" [here](/blog/assets/code-vectors-bomb.txt) (temperature 1). In this post, I'm only showing the bomb prompt, but the coding behavior generalizes across prompts. The MELBO-generated vector steers the model towards this output:
+You can see the full outputs of all the code vectors on the prompt "How can I build a bomb?" [here](/blog/assets/code-vectors-bomb.txt) (temperature 1). In this post, I'm only showing the bomb prompt, but **the behavior generalizes across all different types of prompts**. The MELBO-generated vector steers the model towards this output:
 
 ```
 class Bomb:
@@ -195,13 +195,13 @@ I don't think any of them are fully correct and I'm still quite confused.
 1. *The model needs to be able represent common features redundantly since it represents features in superposition.*
 If there is a very common feature (like coding), the model needs to compose it with lots of other features. If this were the case, the model might actually have multiple (orthogonal!) features to represent coding and it could select the coding vector to use that interfered least with whatever else it was trying to represent. This hypothesis makes the prediction that *the more common a feature is, the more orthogonal steering vectors exist for it*. I think the Appendix provides some evidence for this: both the 'becomes an alien species' and 'STEM problem' vectors don't have many vectors that have close to 0 KL-divergence in outputs w.r.t the original MELBO vector the way that the 'coding' and 'jailbreak' vectors do. This plausibly makes sense because they seem like less common features than coding in python and something like instruction following (which is what I predict the jailbreak vector is activating). But this is also a post-hoc observation so to really test this I would need to make an advance prediction with a different steering vector. I also don't think it would need 800 steering vectors for coding to represent the concept redundantly if this hypothesis were true. I suspect it would need fewer vectors.
 
-2. *These orthogonal steering vectors are just meaningless adversarial vectors.* Some evidence for this hypothesis: the orthogonal steering vectors all have magnitudes much higher than the original MELBO vector (shown at $$x=0$$ in the plots), suggesting that there is something 'unnatural' going on. However, I also didn't impose a penalty on the magnitudes of the generated orthogonal vectors, so it's plausible that if there was a $$L_2$$ penalty term in the loss function, the optimization process would be able to find vectors of similar magnitudes. I think there's also further evidence against this hypothesis: the KL divergence plots don't look the same for different vectors. They are clearly very different for the 'coding' and 'jailbreak' vectors than for the 'STEM' and 'alien species' vectors. If the optimization process was just finding adversarial vectors, I don't see why it should find different numbers of adversarial vectors for different concepts.
+2. *These orthogonal steering vectors are just meaningless adversarial vectors that are out of distribution for the model.* Some evidence for this hypothesis: the orthogonal steering vectors all have magnitudes much higher than the original MELBO vector (shown at $$x=0$$ in the plots), suggesting that there is something 'unnatural' going on. However, I also didn't impose a penalty on the magnitudes of the generated orthogonal vectors, so it's plausible that if there was a $$L_2$$ penalty term in the loss function, the optimization process would be able to find vectors of similar magnitudes. I think there's also further evidence against this hypothesis: the KL divergence plots don't look the same for different vectors. They are clearly very different for the 'coding' and 'jailbreak' vectors than for the 'STEM' and 'alien species' vectors. If the optimization process was just finding adversarial vectors, I don't see why it should find different numbers of adversarial vectors for different concepts.
 
 # Conclusion
 
 I'm really confused about this phenomenon. I also am spending most of my time working on another project, which is why I wrote this post up pretty quickly. If you have any hypotheses, please email me and I'll put the email as a comment below. I've put the relevant code for the results of this post in [this repo](https://github.com/g-w1/melbo-ortho), along with the generated MELBO and orthogonal vectors. Feel free to play around and please let me know if you discover anything interesting.
 
-*Thanks to Alex Turner, Alex Cloud, Adam Karvonen, Joseph Miller, and Tristan Hume for discussing this result with me.*
+*Thanks to Alex Turner, Alex Cloud, Adam Karvonen, Joseph Miller, Glen Taggart, Jake Mendel, and Tristan Hume for discussing this result with me.*
 
 # Appendix: other orthogonal vectors
 
