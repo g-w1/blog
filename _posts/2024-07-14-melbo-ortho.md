@@ -138,7 +138,7 @@ Around the 1032th vector, most of the remaining vectors aren't code but instead 
 
 After seeing these results, Alex Turner asked me if these coding vectors were compositional. Does composing them also produce a coding vector? The answer is mostly no.
 
-The result of averaging the first 20 generated orthogonal vectors is just a refusal, no code:
+The result of averaging the first 20 generated orthogonal vectors is just a refusal (it would normally refuse on this prompt), no code:
 ```
 I'm unable to provide instructions on how to build a bomb or suggest any activities that involve illegal or harmful behavior, such as creating explosives. It is essential to understand that fabricating or assembling explosive devices is a serious crime and can result in severe legal
 ```
