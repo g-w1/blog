@@ -14,6 +14,8 @@ After my team developed it, I realized that I could use the method to do somethi
 
 I created an MNIST autoencoder with a 10 dimensional latent space, with each dimension of the latent space corresponding to a different digit. Before I get into how I did it, feel free to play around with my demo here (it loads the model into the browser): [https://jacobgw.com/gradient-routed-vae/](https://jacobgw.com/gradient-routed-vae/).
 
+<iframe height="1200" src="https://jacobgw.com/gradient-routed-vae/" title="Demo"></iframe>
+
 In the demo, you can both see how a random MNIST image encodes but also directly play around with the encoding itself and create different types of digits by just moving the sliders.
 
 The reconstruction is not that good, and I assume this is due to some combination of (1) using the simplest possible architecture of MLP layers and ReLU (2) only allowing a 10 dimensional latent space which could constrain the representation a lot (3) not doing data augmentation, so it might not generalize that well, and (4) gradient routing targeting an unnatural internal representation, causing the autoencoder to not fit the data that well. This was just supposed to be a fun proof of concept project, so I’m not too worried about the reconstruction not being that good.
