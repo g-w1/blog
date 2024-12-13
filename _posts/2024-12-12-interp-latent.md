@@ -14,7 +14,7 @@ After my team developed it, I realized that I could use the method to do somethi
 
 I created an MNIST autoencoder with a 10 dimensional latent space, with each dimension of the latent space corresponding to a different digit. Before I get into how I did it, feel free to play around with my demo here (it loads the model into the browser): [https://jacobgw.com/gradient-routed-vae/](https://jacobgw.com/gradient-routed-vae/).
 
-<iframe height="1200" src="https://jacobgw.com/gradient-routed-vae/" title="Demo"></iframe>
+<iframe height="1400" width="500" src="https://jacobgw.com/gradient-routed-vae/" title="Demo"></iframe>
 
 In the demo, you can both see how a random MNIST image encodes but also directly play around with the encoding itself and create different types of digits by just moving the sliders.
 
