@@ -8,9 +8,9 @@ usemathjax: true
 ---
 
 
-Over the past few months, I worked to develop [Gradient Routing](https://arxiv.org/abs/2410.04332), a non loss-based method to shape the internals of neural networks.
+Over the past few months, I helped develop [Gradient Routing](https://arxiv.org/abs/2410.04332), a non loss-based method to shape the internals of neural networks.
 
-After we developed it, I realized that I could use the method to do something that I have long wanted to do: make an autoencoder with an extremely interpretable latent space.
+After my team developed it, I realized that I could use the method to do something that I have long wanted to do: make an autoencoder with an extremely interpretable latent space.
 
 I created an MNIST autoencoder with a 10 dimensional latent space, with each dimension of the latent space corresponding to a different digit. Before I get into how I did it, feel free to play around with my demo here (it loads the model into the browser): [https://jacobgw.com/gradient-routed-vae/](https://jacobgw.com/gradient-routed-vae/).
 
