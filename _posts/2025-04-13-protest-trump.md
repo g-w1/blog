@@ -9,16 +9,21 @@ usemathjax: false
 
 > When the Nazis came for the communists,
 I kept quiet; I wasn't a communist.
+
 > When they came for the trade unionists, I kept quiet;
 I wasn't a trade unionist.
+
 > When they locked up the Social Democrats, I kept quiet;
 I wasn't a social democrat.
+
 > When they locked up the Jews, I kept quiet;
 I wasn't a Jew.
+
 > When they came for me, there was no one left to protest.
 
 \- Martin Niemöller
 
+---
 
 I'm writing this post because others can't write it. I recently spoke to a friend who is an international student studying in the U.S. They were scared to criticise Trump in a poetry collection they were writing because they feared getting deported. I'm sure my friend is not the only one who is feeling this way.
 
