@@ -21,7 +21,7 @@
 title: Jacob's Blog
 email: jacoblevgw@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  This is a personal website, produced in my own time and solely reflecting my personal opinions. Statements on this site do not represent the views or policies of my employer.
+  This is a personal website, produced in my own time and solely reflecting my personal opinions. Statements on this site do not represent the views or policies of my employer. I have not signed any contracts that I cannot mention the existence of.
 baseurl: "/blog" # the subpath of your site, e.g. /blog
 url: "https://g-w1.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  g-w1
